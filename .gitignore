@@ -1,2 +1,5 @@
 # Generated binaries
 yauto
+
+# Required to make builds work ...
+/src/

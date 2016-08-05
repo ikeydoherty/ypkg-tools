@@ -14,14 +14,12 @@
 // limitations under the License.
 //
 
-package main
+package ylib
 
 import (
-	"github.com/ikeydoherty/ypkg-tools/ylib"
-	"os"
+	"fmt"
 )
 
-func main() {
-	ylib.PlaceHolder()
-	os.Exit(1)
+func PlaceHolder() {
+	fmt.Println("Place holder for the empty library")
 }
