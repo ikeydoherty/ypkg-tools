@@ -38,13 +38,13 @@ func ExamineURI(uri string) *SourceInfo {
 	basename := path.Base(uri)
 
 	// Try github v* match
-	re := regexp.MustCompile(`https://github.com/.*/(.*?)/archive/v?(.*).tar`)
+	re := regexp.MustCompile(`https://github.com/.*/(.*?)/archive/v?(.*).(tar|zip)`)
 	if ret := re.FindStringSubmatch(uri); len(ret) > 0 {
 		return &SourceInfo{SourceURI: uri, BaseName: basename, PkgName: ret[1], Version: ret[2]}
 	}
 
 	// Try a "normal path"
-	re = regexp.MustCompile(`([a-zA-Z-_.0-9]+)[-|_](.*?)\.[t|zip].*`)
+	re = regexp.MustCompile(`([a-zA-Z-_.0-9]+)[-|_](.*?)\.(t|zip).*`)
 	if ret := re.FindStringSubmatch(basename); len(ret) > 0 {
 		return &SourceInfo{SourceURI: uri, BaseName: basename, PkgName: ret[1], Version: ret[2]}
 	}
