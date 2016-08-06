@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"github.com/ikeydoherty/ypkg-tools/ylib"
 	"os"
-	"os/exec"
 )
 
 // Just to track inside the exit
@@ -34,12 +33,7 @@ func usage_and_quit(args []string) {
 func cleanup_and_exit(source *ylib.SourceInfo) {
 	// Remove the explode tree if it exists
 	if ylib.PathExists("./" + ylib.RootDirectory) {
-		cmd := exec.Command("rm", []string{"-rf", "./" + ylib.RootDirectory}...)
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		if err := cmd.Run(); err != nil {
-			fmt.Fprintf(os.Stderr, "Failed to purge tree: %v: %v\n", ylib.RootDirectory, err)
-		}
+		ylib.NukeTree("./" + ylib.RootDirectory)
 	}
 	if source == nil {
 		os.Exit(0)

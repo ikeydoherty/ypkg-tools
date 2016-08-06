@@ -72,6 +72,18 @@ func PathExists(path string) bool {
 	return true
 }
 
+// Nuke a given path on the disk. be careful!
+func NukeTree(path string) bool {
+	cmd := exec.Command("rm", []string{"-rf", path}...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to purge tree: %v: %v\n", path, err)
+		return false
+	}
+	return true
+}
+
 // Explode the tarball/zip/whathaveyou
 func ExplodeSource(source *SourceInfo) (string, bool) {
 	var cmd string
