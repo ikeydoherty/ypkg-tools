@@ -49,21 +49,34 @@ func main() {
 	args := os.Args
 	badness = true
 
+	// i.e. yauto $URL
 	if len(args) < 2 {
 		usage_and_quit(args)
 	}
 
+	// Try and inspect the URL now, rather than later on..
 	url := args[1]
 	source_info := ylib.ExamineURI(url)
 	defer cleanup_and_exit(source_info)
+	// No idea how to read this
 	if source_info == nil {
 		fmt.Fprintf(os.Stderr, "Failed to examine %v\n", url)
 		return
 	}
 
+	// Try and download the source
 	if !ylib.FetchURI(source_info) {
 		return
 	}
+
+	_, success := ylib.ExplodeSource(source_info)
+	// defer tree_purge(root_dir)
+	if !success {
+		fmt.Fprintf(os.Stderr, "Failed to explode source\n")
+		return
+	}
+
+	fmt.Println("Not fully implemented")
 
 	badness = false
 }

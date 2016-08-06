@@ -68,3 +68,8 @@ func PathExists(path string) bool {
 	}
 	return true
 }
+
+// Explode the tarball/zip/whathaveyou
+func ExplodeSource(source *SourceInfo) (string, bool) {
+	return "", false
+}
