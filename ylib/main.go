@@ -57,7 +57,6 @@ func ExamineURI(uri string) *SourceInfo {
 		return &SourceInfo{SourceURI: uri, BaseName: basename, PkgName: ret[1], Version: ret[2]}
 	}
 
-
 	return nil
 }
 
