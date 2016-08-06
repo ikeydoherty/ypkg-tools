@@ -17,7 +17,10 @@
 package ylib
 
 import (
+	"fmt"
+	"os"
 	"path"
+	"path/filepath"
 	"regexp"
 )
 
@@ -30,6 +33,7 @@ type SourceInfo struct {
 
 const RootDirectory = "output_scan"
 
+// Examine the URI and try to learn the valid version and name for this Thing
 func ExamineURI(uri string) *SourceInfo {
 	basename := path.Base(uri)
 
@@ -46,4 +50,21 @@ func ExamineURI(uri string) *SourceInfo {
 	}
 
 	return nil
+}
+
+// Scan the tree to find things of interest.
+// At some point we need to return the results or do something
+// useful with them.
+func ScanTree(rootdir string) bool {
+	wfunc := func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
+	if err := filepath.Walk(rootdir, wfunc); err != nil {
+		fmt.Fprintf(os.Stderr, "Hit an error. %v", err)
+	}
+	return false
 }

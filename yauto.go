@@ -73,12 +73,16 @@ func main() {
 		return
 	}
 
-	_, success := ylib.ExplodeSource(source_info)
+	rootdir, success := ylib.ExplodeSource(source_info)
 	if !success {
 		fmt.Fprintf(os.Stderr, "Failed to explode source\n")
 		return
 	}
 
+	if !ylib.ScanTree(rootdir) {
+		fmt.Fprintf(os.Stderr, "Failed to scan tree\n")
+		return
+	}
 	fmt.Println("Not fully implemented")
 
 	badness = false
