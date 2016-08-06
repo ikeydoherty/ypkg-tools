@@ -71,6 +71,10 @@ func ScanTree(rootdir string) bool {
 		if err != nil {
 			return err
 		}
+		// Don't want to scan directories.
+		if info.IsDir() {
+			return nil
+		}
 		wg.Add(1)
 		go scan_path(path, &info, &wg)
 		return nil
