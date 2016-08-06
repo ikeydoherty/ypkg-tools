@@ -37,7 +37,15 @@ func main() {
 	url := args[1]
 	source_info := ylib.ExamineURI(url)
 	if source_info == nil {
-		os.Exit(1)
+		goto fail
 	}
-	fmt.Printf("Got somethin: %v (%v): %v\n", source_info.PkgName, source_info.Version, source_info.BaseName)
+
+	if !ylib.FetchURI(source_info) {
+		goto fail
+	}
+
+	os.Exit(0)
+fail:
+	fmt.Println("Cannot analyze source, bailing")
+	os.Exit(1)
 }

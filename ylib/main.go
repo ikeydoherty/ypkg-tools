@@ -23,27 +23,31 @@ import (
 )
 
 type SourceInfo struct {
-	PkgName  string
-	BaseName string
-	Version  string
+	PkgName   string
+	BaseName  string
+	Version   string
+	SourceURI string
 }
 
 func ExamineURI(uri string) *SourceInfo {
-	fmt.Println("Examining the URI!")
-
 	basename := path.Base(uri)
 
 	// Try github v* match
 	re := regexp.MustCompile(`https://github.com/.*/(.*?)/archive/v?(.*).tar`)
 	if ret := re.FindStringSubmatch(uri); len(ret) > 0 {
-		return &SourceInfo{BaseName: basename, PkgName: ret[1], Version: ret[2]}
+		return &SourceInfo{SourceURI: uri, BaseName: basename, PkgName: ret[1], Version: ret[2]}
 	}
 
 	// Try a "normal path"
 	re = regexp.MustCompile(`([a-zA-Z-_.0-9]+)[-|_](.*?)\.[t|zip].*`)
 	if ret := re.FindStringSubmatch(basename); len(ret) > 0 {
-		return &SourceInfo{BaseName: basename, PkgName: ret[1], Version: ret[2]}
+		return &SourceInfo{SourceURI: uri, BaseName: basename, PkgName: ret[1], Version: ret[2]}
 	}
 
 	return nil
+}
+
+func FetchURI(source *SourceInfo) bool {
+	fmt.Println("Don't know how to fetch :(")
+	return false
 }
