@@ -33,7 +33,9 @@ func usage_and_quit(args []string) {
 func cleanup_and_exit(source *ylib.SourceInfo) {
 	// Remove the explode tree if it exists
 	if ylib.PathExists("./" + ylib.RootDirectory) {
-		ylib.NukeTree("./" + ylib.RootDirectory)
+		if err := os.RemoveAll("./" + ylib.RootDirectory); err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to nuke tree: %v\n", err)
+		}
 	}
 	if source == nil {
 		os.Exit(0)
