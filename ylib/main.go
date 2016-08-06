@@ -67,7 +67,11 @@ func scan_path(path string, info os.FileInfo, wg *sync.WaitGroup) {
 	lpath := strings.ToLower(info.Name())
 
 	if strings.HasPrefix(lpath, "license") || strings.HasPrefix(lpath, "licence") || strings.HasPrefix(lpath, "copying") {
-		fmt.Printf("License encountered: %s\n", path)
+		license := scan_license(path)
+		if license != "" {
+			fmt.Printf("License encountered: %s\n", path)
+			fmt.Println(license)
+		}
 	}
 }
 
