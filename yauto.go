@@ -34,11 +34,7 @@ func main() {
 		usage_and_quit(args)
 	}
 
-	// url := args[1]
-	url := "https://github.com/solus-project/linux-steam-integration/releases/download/v0.2/linux-steam-integration-0.2.tar.xz"
-	// url := "https://github.com/solus-project/linux-steam-integration/archive/v0.2.tar.gz"
-	// url := "https://pypi.python.org/packages/fc/f1/7530ac8594453fc850e53580256f3152a8d8f2bb351bc3d0df8d7b53dbde/ruamel.yaml-0.11.11.tar.gz"
-	//url := "http://internode.dl.sourceforge.net/project/yodl/yodl/3.05.01/yodl_3.05.01.orig.tar.gz"
+	url := args[1]
 	source_info := ylib.ExamineURI(url)
 	if source_info == nil {
 		os.Exit(1)
