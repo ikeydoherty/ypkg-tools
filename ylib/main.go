@@ -22,6 +22,7 @@ import (
 	"os/exec"
 	"path"
 	"regexp"
+	"strings"
 )
 
 type SourceInfo struct {
@@ -30,6 +31,8 @@ type SourceInfo struct {
 	Version   string
 	SourceURI string
 }
+
+const RootDirectory = "output_scan"
 
 func ExamineURI(uri string) *SourceInfo {
 	basename := path.Base(uri)
@@ -71,5 +74,36 @@ func PathExists(path string) bool {
 
 // Explode the tarball/zip/whathaveyou
 func ExplodeSource(source *SourceInfo) (string, bool) {
+	var cmd string
+
+	// TODO: Use an absolute path, we need to use subdirs..
+	tarball := source.BaseName
+	outdir := "./" + RootDirectory
+
+	// Ideally we need to nuke the old one.
+	if !PathExists(outdir) {
+		if err := os.MkdirAll(outdir, 00755); err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to create outdir: %v", err)
+			return "", false
+		}
+	}
+
+	if strings.HasSuffix(source.BaseName, ".zip") {
+		cmd = fmt.Sprintf("unzip %v -d %s", tarball, outdir)
+	} else if strings.Contains(source.BaseName, ".tar") {
+		cmd = fmt.Sprintf("tar xf %v -C %s", tarball, outdir)
+	} else {
+		return "", false
+	}
+
+	coms := strings.Split(cmd, " ")
+	command := exec.Command(coms[0], coms[1:]...)
+	command.Stderr = os.Stderr
+
+	if err := command.Run(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		return "", false
+	}
+
 	return "", false
 }
