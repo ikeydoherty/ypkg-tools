@@ -19,8 +19,13 @@ func TestExamineURI(t *testing.T) {
 	// Very odd sourceforge URL
 	uri_tests["http://internode.dl.sourceforge.net/project/yodl/yodl/3.05.01/yodl_3.05.01.orig.tar.gz"] = SourceInfo{PkgName: "yodl", Version: "3.05.01.orig"}
 
+	uri_tests["https://gitlab.com/manaplus/manaplus/repository/archive.tar.gz?ref=v1.6.7.30"] = SourceInfo{PkgName: "manaplus", Version: "1.6.7.30"}
+
 	for uri, expected := range uri_tests {
 		computed := ExamineURI(uri)
+		if computed == nil {
+			t.Fatalf("Failed to parse %v\n", uri)
+		}
 		if computed.PkgName != expected.PkgName {
 			t.Fatalf("PkgName: Expected: %v, got: %v\n", expected.PkgName, computed.PkgName)
 		}
