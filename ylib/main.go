@@ -18,6 +18,7 @@ package ylib
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
@@ -116,6 +117,19 @@ func ExplodeSource(source *SourceInfo) (string, bool) {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		return "", false
 	}
+	// Find the root entry
+	dirs, err := ioutil.ReadDir(outdir)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		return "", false
+	}
 
-	return "", false
+	// Find the usable directory
+	if len(dirs) > 1 {
+		return outdir, true
+	} else if len(dirs) == 0 {
+		return "", false
+	} else {
+		return path.Join(outdir, dirs[0].Name()), true
+	}
 }
