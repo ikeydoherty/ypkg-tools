@@ -17,7 +17,11 @@
 package ylib
 
 import (
+	"crypto/md5"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -92,4 +96,34 @@ func ExplodeSource(source *SourceInfo) (string, bool) {
 	} else {
 		return path.Join(outdir, dirs[0].Name()), true
 	}
+}
+
+func GetFileSHA256(path string) string {
+	hash := sha256.New()
+	if file, err := os.Open(path); err == nil {
+		defer file.Close()
+		if _, err := io.Copy(hash, file); err == nil {
+			return hex.EncodeToString(hash.Sum(nil))
+		} else {
+			fmt.Fprintf(os.Stderr, "Cannot get hash: %v\n", err)
+		}
+	} else {
+		fmt.Fprintf(os.Stderr, "Cannot get hash: %v", err)
+	}
+	return ""
+}
+
+func GetFileMD5(path string) string {
+	hash := md5.New()
+	if file, err := os.Open(path); err == nil {
+		defer file.Close()
+		if _, err := io.Copy(hash, file); err == nil {
+			return hex.EncodeToString(hash.Sum(nil))
+		} else {
+			fmt.Fprintf(os.Stderr, "Cannot get hash: %v\n", err)
+		}
+	} else {
+		fmt.Fprintf(os.Stderr, "Cannot get hash: %v", err)
+	}
+	return ""
 }
