@@ -22,13 +22,32 @@ import (
 	"os"
 )
 
+// Just to track inside the exit
+var badness bool
+
 func usage_and_quit(args []string) {
 	fmt.Printf("Usage: %v [url]\n", args[0])
 	os.Exit(1)
 }
 
+func cleanup_and_exit(source *ylib.SourceInfo) {
+	if source == nil {
+		os.Exit(0)
+	}
+	if ylib.PathExists(source.BaseName) {
+		if err := os.Remove(source.BaseName); err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to unlink %v: %s", source.SourceURI, err)
+			os.Exit(1)
+		}
+	}
+	if badness {
+		os.Exit(1)
+	}
+}
+
 func main() {
 	args := os.Args
+	badness = true
 
 	if len(args) < 2 {
 		usage_and_quit(args)
@@ -36,16 +55,15 @@ func main() {
 
 	url := args[1]
 	source_info := ylib.ExamineURI(url)
+	defer cleanup_and_exit(source_info)
 	if source_info == nil {
-		goto fail
+		fmt.Fprintf(os.Stderr, "Failed to examine %v\n", url)
+		return
 	}
 
 	if !ylib.FetchURI(source_info) {
-		goto fail
+		return
 	}
 
-	os.Exit(0)
-fail:
-	fmt.Println("Cannot analyze source, bailing")
-	os.Exit(1)
+	badness = false
 }

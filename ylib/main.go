@@ -18,6 +18,8 @@ package ylib
 
 import (
 	"fmt"
+	"os"
+	"os/exec"
 	"path"
 	"regexp"
 )
@@ -47,7 +49,22 @@ func ExamineURI(uri string) *SourceInfo {
 	return nil
 }
 
+// Download the given file to the current directory
 func FetchURI(source *SourceInfo) bool {
-	fmt.Println("Don't know how to fetch :(")
-	return false
+	cmd := exec.Command("curl", []string{"-o", source.BaseName, source.SourceURI, "--location"}...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		return false
+	}
+	return true
+}
+
+// We're dealing with local files we create..
+func PathExists(path string) bool {
+	if _, err := os.Stat(path); err != nil {
+		return false
+	}
+	return true
 }
