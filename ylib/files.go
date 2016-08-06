@@ -17,7 +17,7 @@
 package ylib
 
 import (
-	"crypto/md5"
+	"crypto/sha1"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
@@ -113,8 +113,8 @@ func GetFileSHA256(path string) string {
 	return ""
 }
 
-func GetFileMD5(path string) string {
-	hash := md5.New()
+func GetFileSHA1(path string) string {
+	hash := sha1.New()
 	if file, err := os.Open(path); err == nil {
 		defer file.Close()
 		if _, err := io.Copy(hash, file); err == nil {

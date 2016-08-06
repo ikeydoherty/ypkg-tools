@@ -20,7 +20,11 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 )
+
+// Hardcoded for now
+const LicensesPath = "licenses.spdx"
 
 // License mapping table for derp detection
 var license_table map[string]string
@@ -31,10 +35,33 @@ var license_hash map[string]string
 func init() {
 	license_table = make(map[string]string)
 	license_hash = make(map[string]string)
+
+	init_license_hashes()
+}
+
+// Read the spdx licenses into the table
+func init_license_hashes() {
+	fi, err := os.Open(LicensesPath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to open licenses: %v\n", err)
+		return
+	}
+	defer fi.Close()
+
+	sc := bufio.NewScanner(fi)
+	for sc.Scan() {
+		line := sc.Text()
+		splits := strings.Split(line, "\t")
+		if len(splits) < 2 {
+			fmt.Fprintf(os.Stderr, "Malformed licenses file\n")
+			return
+		}
+		license_hash[splits[0]] = splits[1]
+	}
 }
 
 // Scan a file for license text
-func scan_license(path string) string {
+func read_license(path string) string {
 	fi, err := os.Open(path)
 	if err != nil {
 		return ""
@@ -47,4 +74,17 @@ func scan_license(path string) string {
 		fmt.Println(line)
 	}
 	return ""
+}
+
+// Use numerous methods to find out the license
+func scan_license(path string) string {
+	hash := GetFileSHA1(path)
+
+	fmt.Printf("Length is %d\n", len(license_hash))
+	if license, success := license_hash[hash]; success {
+		fmt.Println(license)
+		return license
+	} else {
+		return read_license(path)
+	}
 }
