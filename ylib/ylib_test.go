@@ -19,8 +19,11 @@ func TestExamineURI(t *testing.T) {
 	// Very odd sourceforge URL
 	uri_tests["http://internode.dl.sourceforge.net/project/yodl/yodl/3.05.01/yodl_3.05.01.orig.tar.gz"] = SourceInfo{PkgName: "yodl", Version: "3.05.01.orig"}
 
+	// gitlab tarball
 	uri_tests["https://gitlab.com/manaplus/manaplus/repository/archive.tar.gz?ref=v1.6.7.30"] = SourceInfo{PkgName: "manaplus", Version: "1.6.7.30"}
 
+	// gitbal zip
+	uri_tests["https://gitlab.com/manaplus/manaplus/repository/archive.zip?ref=v1.6.7.30"] = SourceInfo{PkgName: "manaplus", Version: "1.6.7.30"}
 	for uri, expected := range uri_tests {
 		computed := ExamineURI(uri)
 		if computed == nil {

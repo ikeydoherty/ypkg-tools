@@ -45,11 +45,18 @@ func ExamineURI(uri string) *SourceInfo {
 		return &SourceInfo{SourceURI: uri, BaseName: basename, PkgName: ret[1], Version: ret[2]}
 	}
 
+	// Gitlab, especially special.
+	re = regexp.MustCompile(`https://gitlab.com/.*/(.*?)/repository/archive.[tar|zip].*\?ref=v?(.*)`)
+	if ret := re.FindStringSubmatch(uri); len(ret) > 0 {
+		return &SourceInfo{SourceURI: uri, BaseName: basename, PkgName: ret[1], Version: ret[2]}
+	}
+
 	// Try a "normal path"
 	re = regexp.MustCompile(`([a-zA-Z-_.0-9]+)[-|_](.*?)\.(t|zip).*`)
 	if ret := re.FindStringSubmatch(basename); len(ret) > 0 {
 		return &SourceInfo{SourceURI: uri, BaseName: basename, PkgName: ret[1], Version: ret[2]}
 	}
+
 
 	return nil
 }
