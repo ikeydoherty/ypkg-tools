@@ -22,6 +22,7 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
+	"strings"
 	"sync"
 )
 
@@ -54,10 +55,14 @@ func ExamineURI(uri string) *SourceInfo {
 }
 
 // Actual goroutine to scan the files
-func scan_path(path string, info *os.FileInfo, wg *sync.WaitGroup) {
+func scan_path(path string, info os.FileInfo, wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	fmt.Printf("Scanning %s\n", path)
+	lpath := strings.ToLower(info.Name())
+
+	if strings.HasPrefix(lpath, "license") || strings.HasPrefix(lpath, "licence") || strings.HasPrefix(lpath, "copying") {
+		fmt.Printf("License encountered: %s\n", path)
+	}
 }
 
 // Scan the tree to find things of interest.
@@ -76,7 +81,7 @@ func ScanTree(rootdir string) bool {
 			return nil
 		}
 		wg.Add(1)
-		go scan_path(path, &info, &wg)
+		go scan_path(path, info, &wg)
 		return nil
 	}
 
