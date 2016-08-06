@@ -80,7 +80,6 @@ func read_license(path string) string {
 func scan_license(path string) string {
 	hash := GetFileSHA1(path)
 
-	fmt.Printf("Length is %d\n", len(license_hash))
 	if license, success := license_hash[hash]; success {
 		fmt.Println(license)
 		return license
