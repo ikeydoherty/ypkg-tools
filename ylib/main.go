@@ -22,6 +22,7 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
+	"sync"
 )
 
 type SourceInfo struct {
@@ -52,19 +53,33 @@ func ExamineURI(uri string) *SourceInfo {
 	return nil
 }
 
+// Actual goroutine to scan the files
+func scan_path(path string, info *os.FileInfo, wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	fmt.Printf("Scanning %s\n", path)
+}
+
 // Scan the tree to find things of interest.
 // At some point we need to return the results or do something
 // useful with them.
 func ScanTree(rootdir string) bool {
+	var wg sync.WaitGroup
+
+	// Need access to the waitgroup ^
 	wfunc := func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
+		wg.Add(1)
+		go scan_path(path, &info, &wg)
 		return nil
 	}
 
 	if err := filepath.Walk(rootdir, wfunc); err != nil {
 		fmt.Fprintf(os.Stderr, "Hit an error. %v", err)
 	}
+
+	wg.Wait()
 	return false
 }
