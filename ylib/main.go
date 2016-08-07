@@ -34,7 +34,22 @@ type SourceInfo struct {
 	SourceURI string
 }
 
+var dumb_versions = []string{"-source", ".orig"}
+
 const RootDirectory = "output_scan"
+
+// Try to sanitize the version for eopkg requirements
+func NewSourceInfo(uri string, basename string, pkgname string, version string) *SourceInfo {
+	nversion := version
+	for _, tmp := range dumb_versions {
+		nversion = strings.Replace(nversion, tmp, "", -1)
+	}
+	nversion = strings.Replace(nversion, "-", ".", -1)
+	if strings.HasPrefix(nversion, "v") {
+		nversion = nversion[1:]
+	}
+	return &SourceInfo{SourceURI: uri, BaseName: basename, PkgName: pkgname, Version: nversion}
+}
 
 // Examine the URI and try to learn the valid version and name for this Thing
 func ExamineURI(uri string) *SourceInfo {
@@ -43,19 +58,31 @@ func ExamineURI(uri string) *SourceInfo {
 	// Try github v* match
 	re := regexp.MustCompile(`https://github.com/.*/(.*?)/archive/v?(.*).(tar|zip)`)
 	if ret := re.FindStringSubmatch(uri); len(ret) > 0 {
-		return &SourceInfo{SourceURI: uri, BaseName: basename, PkgName: ret[1], Version: ret[2]}
+		return NewSourceInfo(uri, basename, ret[1], ret[2])
 	}
 
 	// Gitlab, especially special.
 	re = regexp.MustCompile(`https://gitlab.com/.*/(.*?)/repository/archive.[tar|zip].*\?ref=v?(.*)`)
 	if ret := re.FindStringSubmatch(uri); len(ret) > 0 {
-		return &SourceInfo{SourceURI: uri, BaseName: basename, PkgName: ret[1], Version: ret[2]}
+		return NewSourceInfo(uri, basename, ret[1], ret[2])
+	}
+
+	// bitbucket URIs.
+	re = regexp.MustCompile(`https://bitbucket.org/sinbad/(.*?)/get/v?(.*).(tar|zip)`)
+	if ret := re.FindStringSubmatch(uri); len(ret) > 0 {
+		return NewSourceInfo(uri, basename, ret[1], ret[2])
+	}
+
+	// Weird -source URLs
+	re = regexp.MustCompile(`([a-zA-Z-_.]+)[-|_](.*?)-source\.(t|zip).*`)
+	if ret := re.FindStringSubmatch(basename); len(ret) > 0 {
+		return NewSourceInfo(uri, basename, ret[1], ret[2])
 	}
 
 	// Try a "normal path"
 	re = regexp.MustCompile(`([a-zA-Z-_.0-9]+)[-|_](.*?)\.(t|zip).*`)
 	if ret := re.FindStringSubmatch(basename); len(ret) > 0 {
-		return &SourceInfo{SourceURI: uri, BaseName: basename, PkgName: ret[1], Version: ret[2]}
+		return NewSourceInfo(uri, basename, ret[1], ret[2])
 	}
 
 	return nil
