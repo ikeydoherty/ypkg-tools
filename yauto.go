@@ -61,7 +61,13 @@ func main() {
 	}
 
 	// Try and inspect the URL now, rather than later on..
-	url := args[1]
+	base_url := args[1]
+	url, err := ylib.StripURI(base_url)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to strip URL fragments: %v\n", err)
+		return
+	}
+
 	source_info := ylib.ExamineURI(url)
 	defer cleanup_and_exit(source_info)
 	// No idea how to read this

@@ -18,6 +18,7 @@ package ylib
 
 import (
 	"fmt"
+	"net/url"
 	"os"
 	"path"
 	"path/filepath"
@@ -101,4 +102,14 @@ func ScanTree(rootdir string) bool {
 
 	wg.Wait()
 	return false
+}
+
+// Strip the URI for yauto purposes
+func StripURI(normurl string) (string, error) {
+	if u, err := url.Parse(normurl); err != nil {
+		return "", err
+	} else {
+		u.Fragment = ""
+		return u.String(), nil
+	}
 }
