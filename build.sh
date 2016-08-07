@@ -8,6 +8,8 @@ mkdir -p src/github.com/ikeydoherty/ypkg-tools
 ln -s "$(pwd)/ylib" src/github.com/ikeydoherty/ypkg-tools/.
 
 GOPATH="$(pwd)" go build yauto.go
+GOPATH="$(pwd)" go vet .
 
 pushd ylib
 GOPATH="$(pwd)" go test .
+GOPATH="$(pwd)" go vet .
