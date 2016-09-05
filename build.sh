@@ -14,9 +14,9 @@ function done_fail(){
 
 function pass_fail(){
     if [ $? == 0 ]; then
-        printf "\e[32m%-35s\e[32m%s\e[39m\n" "$1" "<PASS>"
+        printf "\e[33m%-35s\e[32m%s\e[39m\n" "$1" "<PASS>"
     else
-        printf "\e[32m%-35s\e[31m%s\e[39m\n" "$1" "<FAIL>"
+        printf "\e[33m%-35s\e[31m%s\e[39m\n" "$1" "<FAIL>"
     fi
 }
 
@@ -57,27 +57,16 @@ if [[ -e bin/yauto ]]; then
     rm bin/yauto
     done_fail
 fi
-if [[ -e bin/ytools ]]; then
-    status "Removing 'ytools' binary..."
-    rm bin/ytools
-    done_fail
-fi
-
 
 status "Creating new build tree..."
 mkdir -p src/github.com/ikeydoherty/ypkg-tools
-ln -s "$(pwd)/yauto.go" src/github.com/ikeydoherty/ypkg-tools/.
 ln -s "$(pwd)/ylib" src/github.com/ikeydoherty/ypkg-tools/.
 ln -s "$(pwd)/ytools" src/github.com/ikeydoherty/ypkg-tools/.
 done_fail
 
 stage "Build"
 status "Building 'yauto' binary..."
-go install src/github.com/ikeydoherty/ypkg-tools/yauto.go
-done_fail
-
-status "Building 'ytools' binary..."
-go install src/github.com/ikeydoherty/ypkg-tools/ytools/ytools.go
+go install src/github.com/ikeydoherty/ypkg-tools/ytools/yauto/yauto.go
 done_fail
 
 stage "Test"
@@ -85,7 +74,7 @@ go test ./...
 pass_fail "Testing stage finished:"
 
 stage "Lint"
-golint -set_exit_status
+golint -set_exit_status ./...
 pass_fail "Linting stage finished:"
 
 printf "\n"
