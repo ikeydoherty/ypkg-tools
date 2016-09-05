@@ -14,52 +14,34 @@
 // limitations under the License.
 //
 
-package main
+package yauto
 
 import (
 	"flag"
 	"github.com/ikeydoherty/ypkg-tools/ytools/cmd"
-	"github.com/ikeydoherty/ypkg-tools/ytools/cmd/yauto"
-	"os"
 )
 
-var cmds = make(map[string]*cmd.CMD)
+var set *flag.FlagSet
 
 func usage() {
-	println("USAGE: ytools <tool> <tool_args...>")
-	flag.PrintDefaults()
+	println("Usage: ytools yauto <URI>")
+	set.PrintDefaults()
 }
 
-func registerCmds() {
-	cmds["auto"] = yauto.GetCmd()
-}
-
-func handleArgs() *cmd.CMD {
-	if len(os.Args) != 2 {
-		usage()
-		os.Exit(1)
-	}
-	c := cmds[os.Args[1]]
-	if c == nil {
-		usage()
-		os.Exit(1)
-	}
-	err := c.Flags.Parse(os.Args[2:])
-	if err != nil {
-		c.Flags.Usage()
-		os.Exit(1)
-	}
-	return c
+func flags() *flag.FlagSet {
+	set = flag.NewFlagSet("auto", flag.ContinueOnError)
+	set.Usage = usage
+	return set
 }
 
 func run() {
-	c := cmds[os.Args[1]]
-	c.Run()
+	println("Ran auto")
 }
 
-func main() {
-	flag.Usage = usage
-	registerCmds()
-	handleArgs()
-	run()
+// GetCmd - Builds the "auto" command
+func GetCmd() *cmd.CMD {
+	c := &cmd.CMD{}
+	c.Flags = flags()
+	c.Run = run
+	return c
 }

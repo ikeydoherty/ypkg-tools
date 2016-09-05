@@ -1,8 +1,9 @@
 # Generated binaries
-yauto
+/bin/
 
 # Required to make builds work ...
 /src/
+/pkg/
 
 # WebStorm stuff
 .idea/*
