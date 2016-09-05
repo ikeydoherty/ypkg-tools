@@ -81,6 +81,9 @@ go install src/github.com/ikeydoherty/ypkg-tools/ytools/yauto/yauto.go
 task_end
 stage_end "Build stage finished:"
 
+stage "Vet"
+go vet ./...
+stage_end "Vetting stage finished:"
 
 stage "Test"
 go test ./...
