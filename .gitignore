@@ -3,3 +3,6 @@ yauto
 
 # Required to make builds work ...
 /src/
+
+# WebStorm stuff
+.idea/*
