@@ -2,8 +2,8 @@ package main
 
 import (
 	"flag"
-	"github.com/DataDrake/ypkg-tools/ytools/cmd"
-	"github.com/DataDrake/ypkg-tools/ytools/cmd/yauto"
+	"github.com/ikeydoherty/ypkg-tools/ytools/cmd"
+	"github.com/ikeydoherty/ypkg-tools/ytools/cmd/yauto"
 	"os"
 )
 
