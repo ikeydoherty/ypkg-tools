@@ -4,28 +4,37 @@ export GOPATH="$(pwd)"
 export GOBIN="$GOPATH/bin"
 export PATH="$PATH:$GOBIN"
 
-function done_fail(){
-    if [ $? == 0 ]; then
-        printf "\e[34m%s\e[39m\n" "<DONE>"
-    else
-        printf "\e[31m%s\e[39m\n" "<FAIL>"
-    fi
+(( stage_pass = 0 ))
+(( stage_total = 0 ))
+
+function stage(){
+    (( pass = 0 ))
+    (( total = 0 ))
+    (( stage_total += 1 ))
+    printf "\n\e[34m[%s]\e[39m\n" "$1"
 }
 
-function pass_fail(){
-    if [ $? == 0 ]; then
+function stage_end(){
+    if [ $pass == $total ]; then
+        (( stage_pass += 1 ))
         printf "\e[33m%-35s\e[32m%s\e[39m\n" "$1" "<PASS>"
     else
         printf "\e[33m%-35s\e[31m%s\e[39m\n" "$1" "<FAIL>"
     fi
 }
 
-function stage(){
-    printf "\n\e[34m[%s]\e[39m\n" "$1"
+function task(){
+    printf "%-35s" "$1"
+    (( total += 1 ))
 }
 
-function status(){
-    printf "%-35s" "$1"
+function task_end(){
+    if [ $? == 0 ]; then
+        printf "\e[34m%s\e[39m\n" "<DONE>"
+        (( pass += 1 ))
+    else
+        printf "\e[31m%s\e[39m\n" "<FAIL>"
+    fi
 }
 
 printf "\n\e[34m%s\e[39m\n" "Running 'build.sh' for the 'ypkg-tools' project"
@@ -38,43 +47,65 @@ if [[ ! -e src ]]; then
     mkdir src
 fi
 if [[ ! -e bin/golint ]]; then
-    status "Installing golint..."
+    task "Installing golint..."
     go get -u github.com/golang/lint/golint
     rm -rf src/github.com/golang
     rm -rf src/golang.org
     rm -rf pkg
-    done_fail
+    task_end
 fi
 
 if [[ -e src/github.com/ikeydoherty/ypkg-tools ]]; then
-    status "Removing existing build tree..."
+    task "Removing existing build tree..."
 	rm src/github.com/ikeydoherty/ypkg-tools -r
-	done_fail
+	task_end
 fi
 
 if [[ -e bin/yauto ]]; then
-    status "Removing 'yauto' binary..."
+    task "Removing 'yauto' binary..."
     rm bin/yauto
-    done_fail
+    task_end
 fi
 
-status "Creating new build tree..."
+task "Creating new build tree..."
 mkdir -p src/github.com/ikeydoherty/ypkg-tools
 ln -s "$(pwd)/ylib" src/github.com/ikeydoherty/ypkg-tools/.
 ln -s "$(pwd)/ytools" src/github.com/ikeydoherty/ypkg-tools/.
-done_fail
+task_end
+stage_end "Setup stage finished:"
+
 
 stage "Build"
-status "Building 'yauto' binary..."
+task "Building 'yauto' binary..."
 go install src/github.com/ikeydoherty/ypkg-tools/ytools/yauto/yauto.go
-done_fail
+task_end
+stage_end "Build stage finished:"
+
 
 stage "Test"
 go test ./...
-pass_fail "Testing stage finished:"
+stage_end "Testing stage finished:"
 
 stage "Lint"
+(( total += 1 ))
 golint -set_exit_status ./...
-pass_fail "Linting stage finished:"
+if [ $? == 0 ]; then
+    (( pass += 1 ))
+fi
+stage_end "Linting stage finished:"
 
+stage "Cleanup"
+if [[ -e src/github.com/ikeydoherty/ypkg-tools ]]; then
+    task "Removing existing build tree..."
+	rm src/github.com/ikeydoherty/ypkg-tools -r
+	task_end
+fi
+stage_end "Cleanup stage finished:"
+
+printf "\n"
+if [ $stage_pass == $stage_total ]; then
+    printf "\e[33m%-35s\e[32m%s\e[39m\n" "Build Completed:" "<PASS>"
+else
+    printf "\e[33m%-35s\e[31m%s\e[39m\n" "Build Completed:" "<FAIL>"
+fi
 printf "\n"
