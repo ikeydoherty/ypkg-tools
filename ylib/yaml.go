@@ -92,8 +92,6 @@ func writeYaml(buffer *bytes.Buffer, thingy interface{}) {
 		fs := t.Field(i)
 		fsv := v.Field(i)
 
-		fmt.Println(fsv.Kind())
-
 		key := strings.ToLower(fs.Name)
 
 		switch fsv.Kind() {
@@ -106,6 +104,9 @@ func writeYaml(buffer *bytes.Buffer, thingy interface{}) {
 				ret = append(ret, fsv.Index(i).String())
 			}
 			writeYamlArray(buffer, key, ret)
+		case reflect.Map:
+			// TODO: Handle the special map cases.. i.e. map to map and map to string
+			fallthrough
 		default:
 			// Fallback to String() basically.
 			writeYamlLine(buffer, key, fmt.Sprintf("%v", fsv))
@@ -118,15 +119,6 @@ func WriteYpkg(path string, pkg *MarshalledYpkg) error {
 	var output bytes.Buffer
 
 	writeYaml(&output, *pkg)
-
-	//writeYamlLine(&output, "name", pkg.Name)
-	//writeYamlLine(&output, "version", pkg.Version)
-	//writeYamlLine(&output, "homepage", pkg.Homepage)
-	//writeYamlMap(&output, "source", pkg.Source)
-	//writeYamlArray(&output, "license", pkg.License)
-	//writeYamlLine(&output, "summary", pkg.Summary)
-	//writeYamlLine(&output, "component", pkg.Component)
-	//writeYamlLine(&output, "description", pkg.Description)
 
 	return ioutil.WriteFile(path, output.Bytes(), 00644)
 }
