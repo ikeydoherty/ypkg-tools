@@ -96,12 +96,24 @@ func writeYamlField(buffer *bytes.Buffer, key string, thingy interface{}) {
 	}
 }
 
+func writeYaml(buffer *bytes.Buffer, thingy interface{}) {
+	v := reflect.ValueOf(thingy)
+	t := reflect.TypeOf(thingy)
+	for i := 0; i < v.NumField(); i++ {
+		fs := t.Field(i)
+		fsv := v.Field(i)
+
+		// For now just lowercase them all
+		keyName := strings.ToLower(fs.Name)
+		writeYamlField(buffer, keyName, fsv)
+	}
+}
+
 // WriteYpkg will attempt to write the MarshalledYpkg to a file
 func WriteYpkg(path string, pkg *MarshalledYpkg) error {
 	var output bytes.Buffer
 
-	writeYamlField(&output, "name", pkg.Name)
-	writeYamlField(&output, "release", pkg.Release)
+	writeYaml(&output, *pkg)
 
 	//writeYamlLine(&output, "name", pkg.Name)
 	//writeYamlLine(&output, "version", pkg.Version)
