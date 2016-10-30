@@ -20,6 +20,7 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"reflect"
 	"strings"
 )
 
@@ -31,6 +32,7 @@ type MarshalledYpkg struct {
 	Name        string
 	Version     string
 	Homepage    string
+	Release     int
 	License     []string
 	Summary     string
 	Component   string
@@ -83,18 +85,32 @@ func writeYamlMap(buffer *bytes.Buffer, key string, values map[string]string) {
 	}
 }
 
+func writeYamlField(buffer *bytes.Buffer, key string, thingy interface{}) {
+	ttype := reflect.TypeOf(thingy)
+	switch ttype.Kind() {
+	case reflect.String:
+		writeYamlLine(buffer, key, thingy.(string))
+	default:
+		// Fallback to String() basically.
+		writeYamlLine(buffer, key, fmt.Sprintf("%v", thingy))
+	}
+}
+
 // WriteYpkg will attempt to write the MarshalledYpkg to a file
 func WriteYpkg(path string, pkg *MarshalledYpkg) error {
 	var output bytes.Buffer
 
-	writeYamlLine(&output, "name", pkg.Name)
-	writeYamlLine(&output, "version", pkg.Version)
-	writeYamlLine(&output, "homepage", pkg.Homepage)
-	writeYamlMap(&output, "source", pkg.Source)
-	writeYamlArray(&output, "license", pkg.License)
-	writeYamlLine(&output, "summary", pkg.Summary)
-	writeYamlLine(&output, "component", pkg.Component)
-	writeYamlLine(&output, "description", pkg.Description)
+	writeYamlField(&output, "name", pkg.Name)
+	writeYamlField(&output, "release", pkg.Release)
+
+	//writeYamlLine(&output, "name", pkg.Name)
+	//writeYamlLine(&output, "version", pkg.Version)
+	//writeYamlLine(&output, "homepage", pkg.Homepage)
+	//writeYamlMap(&output, "source", pkg.Source)
+	//writeYamlArray(&output, "license", pkg.License)
+	//writeYamlLine(&output, "summary", pkg.Summary)
+	//writeYamlLine(&output, "component", pkg.Component)
+	//writeYamlLine(&output, "description", pkg.Description)
 
 	return ioutil.WriteFile(path, output.Bytes(), 00644)
 }

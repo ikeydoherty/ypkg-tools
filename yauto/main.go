@@ -51,6 +51,7 @@ func main() {
 	c.Summary = "I am a summary.\nThis is my second\nand third line"
 	c.Source = make(map[string]string)
 	c.Source["http://example.com"] = "SoMeHaSh"
+	c.Release = 12
 	if err := ylib.WriteYpkg("package.yml", &c); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
