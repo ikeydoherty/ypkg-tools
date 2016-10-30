@@ -94,15 +94,15 @@ func ExamineURI(uri string) *SourceInfo {
 func scanPath(path string, info os.FileInfo, wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	lpath := strings.ToLower(info.Name())
+	// lpath := strings.ToLower(info.Name())
 
-	if strings.HasPrefix(lpath, "license") || strings.HasPrefix(lpath, "licence") || strings.HasPrefix(lpath, "copying") {
-		license := scanLicense(path)
-		if license != "" {
-			fmt.Printf("License encountered: %s\n", path)
-			fmt.Println(license)
-		}
-	}
+	//if strings.HasPrefix(lpath, "license") || strings.HasPrefix(lpath, "licence") || strings.HasPrefix(lpath, "copying") {
+	//	license := scanLicense(path)
+	//	if license != "" {
+	//		fmt.Printf("License encountered: %s\n", path)
+	//		fmt.Println(license)
+	//	}
+	//}
 }
 
 // ScanTree recurses directory to find things of interest.
