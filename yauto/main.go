@@ -52,6 +52,7 @@ func main() {
 	c.Source = make(map[string]string)
 	c.Source["http://example.com"] = "SoMeHaSh"
 	c.Release = 12
+	c.License = append(c.License, "CHECK ME")
 	if err := ylib.WriteYpkg("package.yml", &c); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)

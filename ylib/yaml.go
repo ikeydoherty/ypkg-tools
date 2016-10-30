@@ -85,17 +85,6 @@ func writeYamlMap(buffer *bytes.Buffer, key string, values map[string]string) {
 	}
 }
 
-func writeYamlField(buffer *bytes.Buffer, key string, thingy interface{}) {
-	ttype := reflect.TypeOf(thingy)
-	switch ttype.Kind() {
-	case reflect.String:
-		writeYamlLine(buffer, key, thingy.(string))
-	default:
-		// Fallback to String() basically.
-		writeYamlLine(buffer, key, fmt.Sprintf("%v", thingy))
-	}
-}
-
 func writeYaml(buffer *bytes.Buffer, thingy interface{}) {
 	v := reflect.ValueOf(thingy)
 	t := reflect.TypeOf(thingy)
@@ -103,9 +92,24 @@ func writeYaml(buffer *bytes.Buffer, thingy interface{}) {
 		fs := t.Field(i)
 		fsv := v.Field(i)
 
-		// For now just lowercase them all
-		keyName := strings.ToLower(fs.Name)
-		writeYamlField(buffer, keyName, fsv)
+		fmt.Println(fsv.Kind())
+
+		key := strings.ToLower(fs.Name)
+
+		switch fsv.Kind() {
+		case reflect.String:
+			writeYamlLine(buffer, key, fsv.String())
+		case reflect.Array:
+		case reflect.Slice:
+			var ret []string
+			for i := 0; i < fsv.Len(); i++ {
+				ret = append(ret, fsv.Index(i).String())
+			}
+			writeYamlArray(buffer, key, ret)
+		default:
+			// Fallback to String() basically.
+			writeYamlLine(buffer, key, fmt.Sprintf("%v", fsv))
+		}
 	}
 }
 
