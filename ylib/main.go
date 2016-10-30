@@ -133,7 +133,9 @@ func ScanTree(rootdir string) bool {
 
 // Strip the URI for yauto purposes
 func StripURI(normurl string) (string, error) {
-	if u, err := url.Parse(normurl); err != nil {
+	var u *url.URL
+	var err error
+	if u, err = url.Parse(normurl); err != nil {
 		return "", err
 	}
 	u.Fragment = ""
