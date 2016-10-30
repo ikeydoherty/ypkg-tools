@@ -104,9 +104,8 @@ func GetFileSHA256(path string) string {
 		defer file.Close()
 		if _, err := io.Copy(hash, file); err == nil {
 			return hex.EncodeToString(hash.Sum(nil))
-		} else {
-			fmt.Fprintf(os.Stderr, "Cannot get hash: %v\n", err)
 		}
+		fmt.Fprintf(os.Stderr, "Cannot get hash: %v\n", err)
 	} else {
 		fmt.Fprintf(os.Stderr, "Cannot get hash: %v", err)
 	}
@@ -119,9 +118,8 @@ func GetFileSHA1(path string) string {
 		defer file.Close()
 		if _, err := io.Copy(hash, file); err == nil {
 			return hex.EncodeToString(hash.Sum(nil))
-		} else {
-			fmt.Fprintf(os.Stderr, "Cannot get hash: %v\n", err)
 		}
+		fmt.Fprintf(os.Stderr, "Cannot get hash: %v\n", err)
 	} else {
 		fmt.Fprintf(os.Stderr, "Cannot get hash: %v", err)
 	}

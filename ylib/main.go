@@ -34,14 +34,14 @@ type SourceInfo struct {
 	SourceURI string
 }
 
-var dumb_versions = []string{"-source", ".orig"}
+var dumbVersions = []string{"-source", ".orig"}
 
 const RootDirectory = "output_scan"
 
 // Try to sanitize the version for eopkg requirements
 func NewSourceInfo(uri string, basename string, pkgname string, version string) *SourceInfo {
 	nversion := version
-	for _, tmp := range dumb_versions {
+	for _, tmp := range dumbVersions {
 		nversion = strings.Replace(nversion, tmp, "", -1)
 	}
 	nversion = strings.Replace(nversion, "-", ".", -1)
@@ -89,13 +89,13 @@ func ExamineURI(uri string) *SourceInfo {
 }
 
 // Actual goroutine to scan the files
-func scan_path(path string, info os.FileInfo, wg *sync.WaitGroup) {
+func scanPath(path string, info os.FileInfo, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	lpath := strings.ToLower(info.Name())
 
 	if strings.HasPrefix(lpath, "license") || strings.HasPrefix(lpath, "licence") || strings.HasPrefix(lpath, "copying") {
-		license := scan_license(path)
+		license := scanLicense(path)
 		if license != "" {
 			fmt.Printf("License encountered: %s\n", path)
 			fmt.Println(license)
@@ -119,7 +119,7 @@ func ScanTree(rootdir string) bool {
 			return nil
 		}
 		wg.Add(1)
-		go scan_path(path, info, &wg)
+		go scanPath(path, info, &wg)
 		return nil
 	}
 
@@ -135,8 +135,7 @@ func ScanTree(rootdir string) bool {
 func StripURI(normurl string) (string, error) {
 	if u, err := url.Parse(normurl); err != nil {
 		return "", err
-	} else {
-		u.Fragment = ""
-		return u.String(), nil
 	}
+	u.Fragment = ""
+	return u.String(), nil
 }
