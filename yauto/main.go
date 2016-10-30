@@ -49,6 +49,8 @@ func main() {
 	c := ylib.MarshalledYpkg{Name: "i-r-package", Version: "1.2.2"}
 	c.Description = "Herp\nDerp"
 	c.Summary = "I am a summary.\nThis is my second\nand third line"
+	c.Source = make(map[string]string)
+	c.Source["http://example.com"] = "SoMeHaSh"
 	if err := ylib.WriteYpkg("package.yml", &c); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
