@@ -17,8 +17,12 @@ include Makefile.go
 BINARIES = \
 	yauto
 
+# Just for compliance
+LIBRARIES = \
+	ylib
+
 # We want to add compliance for all built binaries
-_CHECK_COMPLIANCE = $(addsuffix .compliant,$(BINARIES))
+_CHECK_COMPLIANCE = $(addsuffix .compliant,$(BINARIES)) $(addsuffix .compliant,$(LIBRARIES))
 
 # Build all binaries as static
 BINS = $(addsuffix .statbin,$(BINARIES))
