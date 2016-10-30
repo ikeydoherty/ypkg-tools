@@ -15,3 +15,32 @@
 //
 
 package ylib
+
+import (
+	"path/filepath"
+)
+
+// Context provides ways to ensure absolute paths formed from the base WorkingDirectory
+type Context struct {
+	WorkingDirectory string
+}
+
+// NewContext returns a new operating context for library consumers
+func NewContext(base string) (*Context, error) {
+	// Assume current directory
+	if base == "" {
+		base = "."
+	}
+
+	absPath, err := filepath.Abs(base)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Context{WorkingDirectory: absPath}, nil
+}
+
+// GetExtractionRoot returns the directory used for archive extraction and examination
+func (c *Context) GetExtractionRoot() string {
+	return filepath.Join(c.WorkingDirectory, "_extract_root")
+}

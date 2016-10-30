@@ -18,6 +18,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/ikeydoherty/ypkg-tools/ylib"
 	"os"
 	"strings"
 )
@@ -33,6 +34,14 @@ func main() {
 	// All archives
 	archives := os.Args[1:]
 	primary := archives[0]
+
+	context, err := ylib.NewContext(".")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Cannot create context: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("WorkDir: %s\n", context.WorkingDirectory)
 
 	fmt.Fprintf(os.Stderr, "Primary archive: %s\n", primary)
 	fmt.Fprintf(os.Stderr, "Fetching: %s\n", strings.Join(archives, ", "))
