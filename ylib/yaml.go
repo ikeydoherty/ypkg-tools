@@ -25,8 +25,8 @@ import (
 type MarshalledYpkg struct {
 	Name        string
 	Version     string
-	Homepage    string
-	License     []string
+	Homepage    string   `yaml:"homepage,omitempty"`
+	License     []string `yaml:"license,flow"`
 	Summary     string
 	Description string
 	Source      map[string]string

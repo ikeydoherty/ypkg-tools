@@ -46,7 +46,9 @@ func main() {
 	fmt.Fprintf(os.Stderr, "Primary archive: %s\n", primary)
 	fmt.Fprintf(os.Stderr, "Fetching: %s\n", strings.Join(archives, ", "))
 
-	c := ylib.MarshalledYpkg{Name: "i-r-package", Version: "1.2"}
+	c := ylib.MarshalledYpkg{Name: "i-r-package", Version: "1.2.2"}
+	c.Description = "Herp\nDerp"
+	c.Summary = "I am a summary.\nThis is my second\nand third line"
 	if err := ylib.WriteYpkg("package.yml", &c); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
