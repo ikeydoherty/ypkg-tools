@@ -9,6 +9,10 @@ workspace_deps:
 %.statbin: workspace_deps
 	GOPATH=$(PWD) go build -o builds/$(subst .statbin,,$@) $(PROJECT_ID)/$(subst .statbin,,$@)
 
+# Dynamic golang binary
+%.dynbin: workspace_deps
+	GOPATH=$(PWD) go build -linkshared -pkgdir $(PWD)/pkg -o builds/$(subst .dynbin,,$@) $(PROJECT_ID)/$(subst .dynbin,,$@)
+
 clean:
 	test ! -e $(PROJECT_ROOT) || rm -rvf $(PROJECT_ROOT); \
 	test ! -d $(PWD)/pkg || rm -rvf $(PWD)/pkg; \
