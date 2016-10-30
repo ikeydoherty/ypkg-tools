@@ -25,12 +25,12 @@ import (
 // Just to track inside the exit
 var badness bool
 
-func usage_and_quit(args []string) {
+func usageAndQuit(args []string) {
 	fmt.Printf("Usage: %v [url]\n", args[0])
 	os.Exit(1)
 }
 
-func cleanup_and_exit(source *ylib.SourceInfo) {
+func cleanupAndExit(source *ylib.SourceInfo) {
 	// Remove the explode tree if it exists
 	if ylib.PathExists("./" + ylib.RootDirectory) {
 		if err := os.RemoveAll("./" + ylib.RootDirectory); err != nil {
@@ -57,31 +57,31 @@ func main() {
 
 	// i.e. yauto $URL
 	if len(args) < 2 {
-		usage_and_quit(args)
+		usageAndQuit(args)
 	}
 
 	// Try and inspect the URL now, rather than later on..
-	base_url := args[1]
-	url, err := ylib.StripURI(base_url)
+	baseURL := args[1]
+	url, err := ylib.StripURI(baseURL)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to strip URL fragments: %v\n", err)
 		return
 	}
 
-	source_info := ylib.ExamineURI(url)
-	defer cleanup_and_exit(source_info)
+	sourceInfo := ylib.ExamineURI(url)
+	defer cleanupAndExit(sourceInfo)
 	// No idea how to read this
-	if source_info == nil {
+	if sourceInfo == nil {
 		fmt.Fprintf(os.Stderr, "Failed to examine %v\n", url)
 		return
 	}
 
 	// Try and download the source
-	if !ylib.FetchURI(source_info) {
+	if !ylib.FetchURI(sourceInfo) {
 		return
 	}
 
-	rootdir, success := ylib.ExplodeSource(source_info)
+	rootdir, success := ylib.ExplodeSource(sourceInfo)
 	if !success {
 		fmt.Fprintf(os.Stderr, "Failed to explode source\n")
 		return
