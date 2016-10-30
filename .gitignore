@@ -1,8 +1,8 @@
 # Generated binaries
 /builds/
 
-# Required to make builds work ...
-/src/
+# Namespaced project root
+/src/github.com/ikeydoherty
 /pkg/
 
 # WebStorm stuff
