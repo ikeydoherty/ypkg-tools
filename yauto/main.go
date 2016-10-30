@@ -26,11 +26,15 @@ func main() {
 	fmt.Fprintf(os.Stderr, "Not yet implemented\n")
 
 	if len(os.Args) < 2 {
-		fmt.Fprintf(os.Stderr, "Usage: %s [archive URIs]\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Usage: %s [primary archive] [additional]\n", os.Args[0])
 		os.Exit(1)
 	}
 
+	// All archives
 	archives := os.Args[1:]
+	primary := archives[0]
+
+	fmt.Fprintf(os.Stderr, "Primary archive: %s\n", primary)
 	fmt.Fprintf(os.Stderr, "Fetching: %s\n", strings.Join(archives, ", "))
 
 	os.Exit(1)
