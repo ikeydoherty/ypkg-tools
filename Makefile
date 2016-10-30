@@ -18,13 +18,13 @@ BINARIES = \
 	yauto
 
 # We want to add compliance for all built binaries
-COMPLIANCE = $(addsuffix .compliant,$(BINARIES))
+_CHECK_COMPLIANCE = $(addsuffix .compliant,$(BINARIES))
 
 # Build all binaries as static
 BINS = $(addsuffix .statbin,$(BINARIES))
 	
 # Ensure our own code is compliant..
-compliant: $(COMPLIANCE)
+compliant: $(_CHECK_COMPLIANCE)
 install: $(BINS)
 	test -d $(DESTDIR)/usr/bin || install -D -d -m 00755 $(DESTDIR)/usr/bin; \
 	install -m 00755 builds/* $(DESTDIR)/usr/bin/.
