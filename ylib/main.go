@@ -27,6 +27,7 @@ import (
 	"sync"
 )
 
+// SourceInfo is the machine readable interpretation of a given Source URI
 type SourceInfo struct {
 	PkgName   string
 	BaseName  string
@@ -36,9 +37,10 @@ type SourceInfo struct {
 
 var dumbVersions = []string{"-source", ".orig"}
 
+// RootDirectory is the base of all operations
 const RootDirectory = "output_scan"
 
-// Try to sanitize the version for eopkg requirements
+// NewSourceInfo attempts to sanitize the version fields
 func NewSourceInfo(uri string, basename string, pkgname string, version string) *SourceInfo {
 	nversion := version
 	for _, tmp := range dumbVersions {
@@ -51,7 +53,7 @@ func NewSourceInfo(uri string, basename string, pkgname string, version string) 
 	return &SourceInfo{SourceURI: uri, BaseName: basename, PkgName: pkgname, Version: nversion}
 }
 
-// Examine the URI and try to learn the valid version and name for this Thing
+// ExamineURI will try to learn the valid version and name for this Thing
 func ExamineURI(uri string) *SourceInfo {
 	basename := path.Base(uri)
 
@@ -103,7 +105,7 @@ func scanPath(path string, info os.FileInfo, wg *sync.WaitGroup) {
 	}
 }
 
-// Scan the tree to find things of interest.
+// ScanTree recurses directory to find things of interest.
 // At some point we need to return the results or do something
 // useful with them.
 func ScanTree(rootdir string) bool {
@@ -131,7 +133,7 @@ func ScanTree(rootdir string) bool {
 	return false
 }
 
-// Strip the URI for yauto purposes
+// StripURI cleans up the URI for validation
 func StripURI(normurl string) (string, error) {
 	var u *url.URL
 	var err error

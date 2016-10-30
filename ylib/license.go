@@ -23,8 +23,7 @@ import (
 	"strings"
 )
 
-// Hardcoded for now
-const LicensesPath = "licenses.spdx"
+const licensesPath = "licenses.spdx"
 
 // License mapping table for derp detection
 var licenseTable map[string]string
@@ -41,7 +40,7 @@ func init() {
 
 // Read the spdx licenses into the table
 func initHashes() {
-	fi, err := os.Open(LicensesPath)
+	fi, err := os.Open(licensesPath)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to open licenses: %v\n", err)
 		return

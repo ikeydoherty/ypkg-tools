@@ -29,7 +29,7 @@ import (
 	"strings"
 )
 
-// We're dealing with local files we create..
+// PathExists determines whether the path exists in the filesystem
 func PathExists(path string) bool {
 	if _, err := os.Stat(path); err != nil {
 		return false
@@ -37,7 +37,7 @@ func PathExists(path string) bool {
 	return true
 }
 
-// Download the given file to the current directory
+// FetchURI will download the given source URI with curl
 func FetchURI(source *SourceInfo) bool {
 	cmd := exec.Command("curl", []string{"-o", source.BaseName, source.SourceURI, "--location"}...)
 	cmd.Stdout = os.Stdout
@@ -49,7 +49,7 @@ func FetchURI(source *SourceInfo) bool {
 	return true
 }
 
-// Explode the tarball/zip/whathaveyou
+// ExplodeSource will extract the first tarball within the given source info
 func ExplodeSource(source *SourceInfo) (string, bool) {
 	var cmd string
 
@@ -98,6 +98,7 @@ func ExplodeSource(source *SourceInfo) (string, bool) {
 	}
 }
 
+// GetFileSHA256 returns the hex encoded SHA256 for the given path
 func GetFileSHA256(path string) string {
 	hash := sha256.New()
 	if file, err := os.Open(path); err == nil {
@@ -112,6 +113,7 @@ func GetFileSHA256(path string) string {
 	return ""
 }
 
+// GetFileSHA1 returns the hex encoded SHA1 for the given path
 func GetFileSHA1(path string) string {
 	hash := sha1.New()
 	if file, err := os.Open(path); err == nil {
