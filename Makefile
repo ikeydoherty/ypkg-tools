@@ -11,35 +11,16 @@ PROJECT_ROOT := src/$(PROJECT_PREFIX)
 
 .DEFAULT_GOAL := all
 
-# Ensure the workspace is setup
-workspace_deps:
-	@ ( \
-		test -d $(PROJECT_ROOT) || mkdir -p $(PWD)/$(PROJECT_ROOT); \
-		test -e $(PROJECT_ROOT)/$(PROJECT_NAME) || ln -s $(PWD) $(PROJECT_ROOT)/. ; \
-	);
+include Makefile.go
 
-# "Normal" static binary
-%.statbin: workspace_deps
-	GOPATH=$(PWD) go build -o builds/$(subst .statbin,,$@) $(PROJECT_ID)/$(subst .statbin,,$@)
-
-clean:
-	test ! -e $(PROJECT_ROOT) || rm -rvf $(PROJECT_ROOT); \
-	test ! -d $(PWD)/pkg || rm -rvf $(PWD)/pkg; \
-	test ! -d $(PWD)/builds || rm -rvf $(PWD)/builds
-
-%.compliant:
-	@ ( \
-		pushd "$(subst .compliant,,$@)" >/dev/null || exit 1; \
-		go fmt || exit 1; \
-		GOPATH=$(PWD)/ golint || exit 1; \
-		GOPATH=$(PWD)/ go vet || exit 1; \
-	);
-
+# The resulting binaries map to the subproject names
 BINARIES = \
 	yauto
 
+# We want to add compliance for all built binaries
 COMPLIANCE = $(addsuffix .compliant,$(BINARIES))
-# Build yauto as static for now
+
+# Build all binaries as static
 BINS = $(addsuffix .statbin,$(BINARIES))
 	
 # Ensure our own code is compliant..
